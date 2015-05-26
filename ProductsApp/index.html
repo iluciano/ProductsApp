@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Product App</title>
+    <link href="http://s3.amazonaws.com/codecademy-content/projects/bootstrap.min.css" rel="stylesheet" />
+    <link href='http://fonts.googleapis.com/css?family=Roboto:500,300,700,400' rel='stylesheet' type='text/css'>
+
+    <script src="js/shared/angular.min.js"></script>
+</head>
+<body ng-app="myApp">
+    <div class="main" ng-controller="MainController">
+        <div class="container">
+            <div ng-repeat="post in posts" class="col-md-6">
+                <p>{{post.Name}}</p>
+                <p>R{{post.Price | currency}}</p>
+                <p>{{post.Category}}</p>
+            </div>
+        </div>
+    </div>
+    <div>
+        <h2>Todos os produtos</h2>
+        <ul id="products" />
+    </div>
+    <div>
+        <h2>Buscar por ID</h2>
+        <input type="text" id="prodId" size="5" />
+        <input type="button" value="Buscar" onclick="find();" />
+        <p id="product" />
+    </div>
+    <!-- Modules -->
+    <script src="js/app.js"></script>
+
+    <!-- Controllers -->
+    <script src="js/controllers/MainController.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+    <script>
+        var uri = 'api/products';
+
+        $(document).ready(function () {
+            // Send an AJAX request
+            $.getJSON(uri)
+                .done(function (data) {
+                    // On success, 'data' contains a list of products.
+                    $.each(data, function (key, item) {
+                        // Add a list item for the product.
+                        $('<li>', { text: formatItem(item) }).appendTo($('#products'));
+                    });
+                });
+        });
+
+        function formatItem(item) {
+            return item.Name + ': $' + item.Price;
+        }
+
+        function find() {
+            var id = $('#prodId').val();
+            $.getJSON(uri + '/' + id)
+                .done(function (data) {
+                    $('#product').text(formatItem(data));
+                })
+                .fail(function (jqXHR, textStatus, err) {
+                    $('#product').text('Error: ' + err);
+                });
+        }
+    </script>
+</body>
+</html>
